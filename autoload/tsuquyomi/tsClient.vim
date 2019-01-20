@@ -929,9 +929,16 @@ endfunction
 " PARAM: {int} delay Delay time [msec].
 function! tsuquyomi#tsClient#tsAsyncGeterr(files, delay)
   let l:args = {'files': a:files, 'delay': a:delay}
-  let l:delaySec = a:delay * 1.0 / 1000.0
-  let l:typeCount = tsuquyomi#config#isHigher(280) ? 3 : 2
   call tsuquyomi#tsClient#sendCommandAsyncEvents('geterr', l:args)
+endfunction
+
+" Get errors for project.
+" This command is available only at tsserver ~v.1.6
+" PARAM: {string} file File name in target project.
+" PARAM: {int} delay Delay time [msec].
+function! tsuquyomi#tsClient#tsAsyncGeterrForProject(file, delay)
+  let l:args = {'file': a:file, 'delay': a:delay}
+  call tsuquyomi#tsClient#sendCommandAsyncEvents('geterrForProject', l:args)
 endfunction
 
 " ### TSServer command wrappers }}}

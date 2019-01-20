@@ -202,8 +202,6 @@ function! tsuquyomi#config#createBufLocalCommand()
   command! -buffer TsuTypeDefinition        :call tsuquyomi#typeDefinition()
   command! -buffer TsuquyomiGeterr          :call tsuquyomi#geterr()
   command! -buffer TsuGeterr                :call tsuquyomi#geterr()
-  command! -buffer TsuquyomiGeterrProject   :call tsuquyomi#geterrProject()
-  command! -buffer TsuGeterrProject         :call tsuquyomi#geterrProject()
   command! -buffer TsuquyomiRenameSymbol    :call tsuquyomi#renameSymbol()
   command! -buffer TsuRenameSymbol          :call tsuquyomi#renameSymbol()
   command! -buffer TsuquyomiRenameSymbolC   :call tsuquyomi#renameSymbolWithComments()
@@ -214,6 +212,8 @@ function! tsuquyomi#config#createBufLocalCommand()
   command! -buffer TsuSignatureHelp         :call tsuquyomi#signatureHelp()
   command! -buffer TsuAsyncGeterr           :call tsuquyomi#asyncGeterr()
   command! -buffer TsuquyomiAsyncGeterr     :call tsuquyomi#asyncGeterr()
+  command! -buffer TsuAsyncGeterrProject    :call tsuquyomi#asyncGeterrProject()
+  command! -buffer TsuquyomiAsyncGeterrProject :call tsuquyomi#asyncGeterrProject()
 
   " TODO These commands don't work correctly.
   command! -buffer TsuquyomiRenameSymbolS   :call tsuquyomi#renameSymbolWithStrings()
@@ -223,6 +223,8 @@ function! tsuquyomi#config#createBufLocalCommand()
 
   command! -buffer TsuquyomiImport          :call tsuquyomi#es6import#complete()
   command! -buffer TsuImport                :call tsuquyomi#es6import#complete()
+  command! -buffer TsuquyomiGeterrProject   :call tsuquyomi#geterrProject()
+  command! -buffer TsuGeterrProject         :call tsuquyomi#geterrProject()
 endfunction
 
 function! tsuquyomi#config#createBufLocalMap()

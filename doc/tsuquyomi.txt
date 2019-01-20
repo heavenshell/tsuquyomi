@@ -1,6 +1,6 @@
 *tsuquyomi* is a Vim plugin for TypeScript.
 
-Version: 0.6.0
+Version: 0.9.0
 Author : Quramy <yosuke.kurami@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -217,6 +217,13 @@ COMMANDS					*tsuquyomi-commands*
 						*:TsuGeterrProject*
 :TsuquyomiGeterrProject
 		Show all compilation errors of your project in QuickFix window.
+		This command requires TypeScript@v1.6.0 or later.
+
+						*:TsuquyomiAsyncGeterrProject*
+						*:TsuAsyncGeterrProject*
+:TsuquyomiAsyncGeterrProject
+		Show all compilation errors of your project in QuickFix window
+		asynchronous.
 		This command requires TypeScript@v1.6.0 or later.
 
 						*:TsuquyomiSeaarch*

@@ -1,6 +1,6 @@
 *tsuquyomi* はTypeScript向けのVim plugin です.
 
-Version: 0.5.1
+Version: 0.9.0
 Author : Quramy <yosuke.kurami@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -222,6 +222,13 @@ Prompt:
 :TsuquyomiAsyncGeterr
 		カレントバッファのコンパイルエラー情報を非同期で
 		QuickFixウィンドウへ表示します.
+
+						*:TsuquyomiAsyncGeterrProject*
+						*:TsuAsyncGeterrProject*
+:TsuquyomiAsyncGeterr
+		プロジェクトのコンパイルエラー情報全てを非同期で
+		QuickFixウィンドウへ表示します.
+		このコマンドにはTypeScript@v1.6.0以上が必要です.
 
 						*:TsuquyomiSeaarch*
 						*:TsuSearch*

@@ -612,6 +612,26 @@ function! tsuquyomi#asyncGeterr(...)
   endif
 endfunction
 
+function! tsuquyomi#asyncGeterrProject()
+  if g:tsuquyomi_is_available == 1
+    call tsuquyomi#registerNotify(function('s:setqflist'), 'diagnostics')
+
+    call tsuquyomi#emitChange(bufnr('%'))
+
+    " TODO use tsuquyomi#emitChange()'s return value
+    let l:file = expand('%:p')
+
+    " TODO Project is large, slow...should Asynchronize.
+    let l:pinfo = tsuquyomi#projectInfo(l:file)
+    if !has_key(l:pinfo, 'filteredFileNames') || !len(l:pinfo.filteredFileNames)
+      return
+    endif
+
+    let l:delayMsec = 50 "TODO export global option
+    call tsuquyomi#tsClient#tsAsyncGeterrForProject(l:file, l:delayMsec)
+  endif
+endfunction
+
 function! tsuquyomi#parseDiagnosticEvent(event, supportedCodes)
   let quickfix_list = []
   let codes = len(a:supportedCodes) > 0 ? a:supportedCodes : s:supportedCodeFixes
