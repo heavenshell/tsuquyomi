@@ -472,6 +472,22 @@ function! tsuquyomi#complete(findstart, base)
 
   endif
 endfunction
+
+function! tsuquyomi#candidates(arg_lead, cmd_line, cursor_pos)
+  call tsuquyomi#emitChange(bufnr('%'))
+  let l:line = line('.')
+  let l:offset = col('.')
+  let l:file = expand('%:p')
+
+  let l:res = tsuquyomi#tsClient#tsCompletions(l:file, l:line, l:offset, a:arg_lead)
+  if len(res) > 0
+    let l:candidates = map(l:res, {i, v -> v['name']})
+    let l:filter_cmd = printf('^%s', a:arg_lead)
+    return filter(l:candidates, {i, v -> v =~ l:filter_cmd})
+  endif
+
+  return []
+endfunction
 " ### Complete }}}
 
 " #### Definition {{{
@@ -838,7 +854,7 @@ function! s:renameSymbolWithOptions(findInComments, findInString)
 
   " * Question user what new symbol name.
   echohl String
-  let renameTo = input('[Tsuquyomi] New symbol name : ')
+  let renameTo = input('[Tsuquyomi] New symbol name : ', '', 'customlist,tsuquyomi#candidates')
   echohl none
   if !s:is_valid_identifier(renameTo)
     echo ' '
