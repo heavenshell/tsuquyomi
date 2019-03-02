@@ -854,7 +854,7 @@ function! s:renameSymbolWithOptions(findInComments, findInString)
 
   " * Question user what new symbol name.
   echohl String
-  let renameTo = input('[Tsuquyomi] New symbol name : ', '', 'customlist,tsuquyomi#candidates')
+  let renameTo = input('[Tsuquyomi] New symbol name (candidates are shown using TAB): ', '', 'customlist,tsuquyomi#candidates')
   echohl none
   if !s:is_valid_identifier(renameTo)
     echo ' '
