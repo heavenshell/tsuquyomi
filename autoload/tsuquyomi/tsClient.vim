@@ -41,6 +41,7 @@ call add(s:ignore_response_conditions, 'npm notice created a lockfile')
 let s:callbacks = {}
 let s:notify_callback = {}
 let s:quickfix_list = []
+let s:progress_function = ''
 " ### }}}
 
 " ### Utilites {{{
@@ -115,6 +116,25 @@ function! s:getEventType(item)
   return 0
 endfunction
 
+function! s:showProgress(item)
+  if type(a:item) == v:t_dict && a:item['type'] ==# 'event'
+    if a:item['event'] == 'requestCompleted'
+      echo printf('[Tsuquyomi] Reading responses [event: %s]', a:item['event'])
+      echo ''
+    else
+      if has_key(a:item['body'], 'file')
+        let l:length = strlen(a:item['body']['file'])
+        let l:size = &columns - 34
+        if l:size >= l:length
+          let l:file = a:item['body']['file']
+        else
+          let l:file = a:item['body']['file'][abs(l:size - l:length): ]
+        endif
+        echo printf('[Tsuquyomi] Reading modules [...%s]', l:file)
+      endif
+    endif
+  endif
+endfunction
 
 function! tsuquyomi#tsClient#startTss()
   if !s:is_vim8 || g:tsuquyomi_use_vimproc
@@ -204,6 +224,10 @@ function! tsuquyomi#tsClient#registerNotify(callback, key)
   let s:notify_callback[a:key] = a:callback
 endfunction
 
+function! tsuquyomi#tsClient#registerProgress(callback) abort
+  let s:progress_function = a:callback
+endfunction
+
 "
 " Handle TSServer responses.
 "
@@ -226,6 +250,14 @@ function! tsuquyomi#tsClient#handleMessage(ch, msg)
     endif
   endfor
   let l:item = json_decode(l:res_item)
+
+  if s:progress_function == ''
+    call s:showProgress(l:item)
+  else
+    let Cb = function(s:progress_function)
+    call Cb(l:item)
+  endif
+
   let l:eventName = s:getEventType(l:item)
 
   if(has_key(s:callbacks, l:eventName))
