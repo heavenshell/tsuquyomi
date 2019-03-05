@@ -514,11 +514,9 @@ EXAMPLES					*tsuquyomi-examples*
 >
 	autocmd FileType typescript setlocal completeopt-=menu
 <
-
 						*tsuquyomi-examples-async*
 Vim8 の Job / Channel を利用し非同期でカレントバッファのコンパイルエラー情報を
 QuickFixウィンドウへ表示します.
-
 >
 	autocmd InsertLeave,BufWritePost *.ts,*.tsx call tsuquyomi#asyncGeterr()
 <

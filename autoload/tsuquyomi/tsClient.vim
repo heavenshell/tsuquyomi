@@ -41,7 +41,9 @@ call add(s:ignore_response_conditions, 'npm notice created a lockfile')
 let s:callbacks = {}
 let s:notify_callback = {}
 let s:quickfix_list = []
+let s:async_request_completed = 0
 let s:progress_function = ''
+let s:progress_flag = 0
 " ### }}}
 
 " ### Utilites {{{
@@ -117,17 +119,30 @@ function! s:getEventType(item)
 endfunction
 
 function! s:showProgress(item)
-  if type(a:item) == v:t_dict && a:item['type'] ==# 'event'
+  " Default progress function.
+  " You can describe own progress function like followings to your .vimrc
+  "
+  " function! s:progress(item)
+  "   echomsg string(a:item)
+  " endfunction
+  "
+  " call tsuquyomi#tsClient#registerProgress(function('s:progress'))
+  if type(a:item) == v:t_dict
+      \ && a:item['type'] ==# 'event'
+      \ && s:progress_flag == 1
     if a:item['event'] == 'requestCompleted'
+      let s:progress_flag = 0
       echo printf('[Tsuquyomi] Reading responses [event: %s]', a:item['event'])
       echo ''
     else
       if has_key(a:item['body'], 'file')
         let l:length = strlen(a:item['body']['file'])
+        " 34 bye chars for message prefix
         let l:size = &columns - 34
         if l:size >= l:length
           let l:file = a:item['body']['file']
         else
+          " Message is overflowed with column size so add ellipsis.
           let l:file = a:item['body']['file'][abs(l:size - l:length): ]
         endif
         echo printf('[Tsuquyomi] Reading modules [...%s]', l:file)
@@ -212,6 +227,7 @@ function! tsuquyomi#tsClient#readDiagnostics(item)
       call Callback()
       let s:quickfix_list = []
       let s:request_seq = s:request_seq + 1
+      let s:async_request_completed = 1
     endif
   else
     " Cache syntaxDiag and semanticDiag messages until request was completed.
@@ -232,7 +248,7 @@ endfunction
 " Handle TSServer responses.
 "
 function! tsuquyomi#tsClient#handleMessage(ch, msg)
-  if type(a:msg) != 1 || a:msg == ''
+  if type(a:msg) != 1 || a:msg == '' || s:async_request_completed == 1
     " Not a string or blank message.
     return
   endif
@@ -277,6 +293,7 @@ endfunction
 function! tsuquyomi#tsClient#sendAsyncRequest(line)
   if s:is_vim8 && g:tsuquyomi_use_vimproc == 0
     call tsuquyomi#tsClient#startTss()
+    let s:async_request_completed = 0
     call ch_sendraw(s:tsq['channel'], a:line . "\n")
   endif
 endfunction
@@ -431,7 +448,6 @@ endfunction
 " PARAM: {string} cmd Command type. e.g. 'completion', etc...
 " PARAM: {dictionary} args Arguments object. e.g. {'file': 'myApp.ts'}.
 function! tsuquyomi#tsClient#sendCommandAsyncEvents(cmd, args)
-  let s:quickfix_list = []
   let l:input = json_encode({'command': a:cmd, 'arguments': a:args, 'type': 'request', 'seq': s:request_seq})
   " call tsuquyomi#perfLogger#record('beforeCmd:'.a:cmd)
   call tsuquyomi#tsClient#sendAsyncRequest(l:input)
@@ -960,6 +976,8 @@ endfunction
 " PARAM: {list<string>} files List of filename
 " PARAM: {int} delay Delay time [msec].
 function! tsuquyomi#tsClient#tsAsyncGeterr(files, delay)
+  let s:quickfix_list = []
+  let s:progress_flag = 0
   let l:args = {'files': a:files, 'delay': a:delay}
   call tsuquyomi#tsClient#sendCommandAsyncEvents('geterr', l:args)
 endfunction
@@ -969,6 +987,8 @@ endfunction
 " PARAM: {string} file File name in target project.
 " PARAM: {int} delay Delay time [msec].
 function! tsuquyomi#tsClient#tsAsyncGeterrForProject(file, delay)
+  let s:quickfix_list = []
+  let s:progress_flag = 1
   let l:args = {'file': a:file, 'delay': a:delay}
   call tsuquyomi#tsClient#sendCommandAsyncEvents('geterrForProject', l:args)
 endfunction
