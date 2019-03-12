@@ -616,10 +616,7 @@ function! tsuquyomi#asyncGeterrProject()
   if g:tsuquyomi_is_available == 1
     call tsuquyomi#registerNotify(function('s:setqflist'), 'diagnostics')
 
-    call tsuquyomi#emitChange(bufnr('%'))
-
-    " TODO use tsuquyomi#emitChange()'s return value
-    let l:file = expand('%:p')
+    let l:file = tsuquyomi#emitChange(bufnr('%'))
 
     " TODO Project is large, slow...should Asynchronize.
     let l:pinfo = tsuquyomi#projectInfo(l:file)
