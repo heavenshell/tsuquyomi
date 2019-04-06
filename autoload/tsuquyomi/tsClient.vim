@@ -120,7 +120,7 @@ endfunction
 
 function! s:showProgress(item)
   " Default progress function.
-  " You can describe own progress function like followings to your .vimrc
+  " You can describe your own progress function like followings to your .vimrc
   "
   " function! s:progress(item)
   "   echomsg string(a:item)
@@ -133,6 +133,7 @@ function! s:showProgress(item)
     if a:item['event'] == 'requestCompleted'
       let s:progress_flag = 0
       echo printf('[Tsuquyomi] Reading responses [event: %s]', a:item['event'])
+      " Clear echo area
       echo ''
     else
       if has_key(a:item['body'], 'file')
@@ -268,6 +269,7 @@ function! tsuquyomi#tsClient#handleMessage(ch, msg)
   let l:item = json_decode(l:res_item)
 
   if s:progress_function == ''
+    " Execute default progerss function.
     call s:showProgress(l:item)
   else
     let Cb = function(s:progress_function)
